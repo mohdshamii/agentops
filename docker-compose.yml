@@ -1,24 +1,28 @@
 version: '3.8'
 
 services:
-  ai-agent:
-    image: codexshami/nextgen-ai-agent:latest
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
-    environment:
-      - ENV_VAR_1=value1
-      - ENV_VAR_2=value2
+      - "8000:8000"
+    env_file:
+      - .env
     volumes:
-      - ./data:/app/data
+      - ./backend:/app/backend
+      - ./ai_agent.db:/app/backend/ai_agent.db
+      - ./vector_store.json:/app/backend/vector_store.json
 
-  database:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: dbname
+  frontend:
+    image: node:18-alpine
+    working_dir: /app
     volumes:
-      - db_data:/var/lib/postgresql/data
-
-volumes:
-  db_data: {}
+      - ./frontend:/app
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - backend

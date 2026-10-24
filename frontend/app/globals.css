@@ -1,39 +1,91 @@
+:root {
+  --bg-primary: #121212;
+  --bg-surface: #181818;
+  --bg-card: #1e1e1e;
+  --bg-composer: #1a1a1a;
+  --bg-hover: #262626;
+  --bg-active: #2e2e2e;
+
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-medium: rgba(255, 255, 255, 0.14);
+  --border-focus: #007CFF;
+
+  --text-primary: #ffffff;
+  --text-secondary: #9e9e9e;
+  --text-muted: #666666;
+
+  --accent-blue: #007CFF;
+  --accent-blue-hover: #0066d6;
+  --accent-blue-subtle: rgba(0, 124, 255, 0.12);
+  --accent-blue-border: rgba(0, 124, 255, 0.35);
+
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-error: #ef4444;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f8f9fa;
+  --bg-surface: #f1f3f5;
+  --bg-card: #ffffff;
+  --bg-composer: #ffffff;
+  --bg-hover: #e9ecef;
+  --bg-active: #dee2e6;
+
+  --border-subtle: #e5e7eb;
+  --border-medium: #d1d5db;
+  --border-focus: #007CFF;
+
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+
+  --accent-blue: #007CFF;
+  --accent-blue-hover: #0066d6;
+  --accent-blue-subtle: rgba(0, 124, 255, 0.08);
+  --accent-blue-border: rgba(0, 124, 255, 0.25);
+}
+
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-html,
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+html, body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f5f7fa;
 }
 
-code {
-  background: #f0f0f0;
-  padding: 0.2em 0.4em;
-  border-radius: 3px;
-  font-family: "Courier New", monospace;
+code, pre, .font-mono {
+  font-family: 'Geist Mono', 'JetBrains Mono', monospace;
 }
 
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 5px;
+  height: 5px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: var(--border-medium);
+  border-radius: var(--radius-full);
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--text-muted);
 }
