@@ -1,12 +1,15 @@
-export const SYSTEM_PROMPT = `You are NextGen AI Agent, a helpful and intelligent assistant.
-You can help with:
-- Answering questions
-- Writing and debugging code
-- Explaining concepts
-- Automating tasks
-- Generating content
+export const MODELS = [
+  { id: "meta-llama/Llama-3.2-3B-Instruct", name: "LLaMA 3.2 (3B) - Fast & Efficient" },
+  { id: "mistralai/Mistral-7B-Instruct-v0.3", name: "Mistral 7B - Strong Reasoning" },
+  { id: "Qwen/Qwen2.5-72B-Instruct", name: "Qwen 2.5 (72B) - High Capacity" },
+  { id: "Qwen/Qwen2.5-Coder-32B-Instruct", name: "Qwen 2.5 Coder (32B) - Engineering" },
+  { id: "deepseek-ai/DeepSeek-R1", name: "DeepSeek R1 - Multi-Step Reasoning" }
+];
 
-Always be clear, concise, and provide actionable responses.`;
-
-export const DEFAULT_MODEL = "gpt-4";
-export const MAX_MESSAGE_LENGTH = 4000;
+export const PERSONAS = [
+  { id: "assistant", name: "General Assistant", desc: "Balanced, proactive agent" },
+  { id: "coder", name: "Software Engineer", desc: "Production code & architecture" },
+  { id: "researcher", name: "Web Researcher", desc: "Deep search & factual scraping" },
+  { id: "data_analyst", name: "Data & SQL Analyst", desc: "Database querying & insights" },
+  { id: "planner", name: "Autonomous Planner", desc: "Multi-step goal coordinator" }
+];

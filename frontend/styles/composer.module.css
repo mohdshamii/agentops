@@ -1,0 +1,240 @@
+.composerWrapper {
+  width: 100%;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 1.25rem 1.5rem;
+}
+
+.composerCard {
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  border-radius: 20px;
+  padding: 0.85rem 1rem 0.65rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.composerCard:focus-within {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px var(--accent-blue-subtle), 0 4px 25px rgba(0, 124, 255, 0.1);
+}
+
+.attachmentChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.thumbImage {
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.attachmentLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.removeAssetBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0.1rem;
+}
+
+.removeAssetBtn:hover {
+  color: var(--status-error);
+}
+
+.textarea {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: none;
+  min-height: 44px;
+  max-height: 200px;
+  padding: 0.2rem 0.25rem;
+}
+
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.toolbarRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.leftPillsGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.pillButton {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pillButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.pillButtonActive {
+  background: var(--accent-blue-subtle) !important;
+  color: var(--accent-blue) !important;
+  border-color: var(--accent-blue-border) !important;
+  font-weight: 600;
+}
+
+.pillIconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pillIconButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.rightActionGroup {
+  display: flex;
+  align-items: center;
+}
+
+.sendButton {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--accent-blue);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.sendButton:hover:not(:disabled) {
+  background: var(--accent-blue-hover);
+  transform: scale(1.04);
+}
+
+.sendButton:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Model Dropdown Menu */
+.modelSelectorContainer {
+  position: relative;
+}
+
+.modelDropdownMenu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 270px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  padding: 0.4rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownHeader {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.5rem;
+}
+
+.modelOptionItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast);
+}
+
+.modelOptionItem:hover {
+  background: var(--bg-hover);
+}
+
+.modelOptionActive {
+  background: var(--accent-blue-subtle) !important;
+}
+
+.modelOptionActive .modelOptionName {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.modelOptionName {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+}
+
+.modelOptionId {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: 'Geist Mono', monospace;
+}
