@@ -1,26 +1,36 @@
 # AgentOps
 
-### Autonomous AI Agent Platform with Open-Weight Intelligence
+### A personal project exploring agent architecture with open-weight models
 
-AgentOps is an enterprise-grade agentic AI platform designed for multi-step reasoning, autonomous workflows, dynamic tool execution, and vector memory management. Built with a minimalist dark interface inspired by Kimi AI, AgentOps provides seamless access to open-weight models including LLaMA 3.2, Mistral 7B, Qwen 2.5 Coder, and DeepSeek R1 via modular model adapters.
+AgentOps is an open-source project I'm building to understand how multi-step AI agents are put together. The core idea is to keep the agent logic independent of the model provider: an adapter layer lets LLaMA 3.2, Mistral 7B, Qwen 2.5 Coder and DeepSeek R1 (via the Hugging Face router) be swapped without changing the rest of the system. OpenAI-compatible and local fallback adapters are included too.
+
+> **Status: early-stage learning project, not a production system.** See [Known Gaps](#known-gaps) before running it anywhere that matters.
 
 ---
 
-## User Interface & System Visuals
+## Screenshots
 
-### 1. Conversational Interface & Shell
-The primary workspace utilizes a precision dark theme (`#121212` background, white typography, `#007CFF` electric-blue accents, and Inter/Geist Mono typography) featuring a collapsible session sidebar, quick prompt action chips, and a rounded prompt composer.
+**Conversational interface** - dark theme, collapsible session sidebar, quick-prompt chips and a prompt composer.
 
 ![AgentOps Conversational Interface](img/output1.png)
 
-### 2. Modular Model Adapter Dropdown
-Users can switch between top-tier open-weight models in real time through the modular model adapter interface. Supported engines include LLaMA 3.2 (3B), Mistral 7B, Qwen 2.5 (72B), Qwen 2.5 Coder (32B), and DeepSeek R1.
+**Model adapter selector** - switch between supported open-weight models at runtime.
 
 ![Modular Model Selector](img/op2.png)
 
 ---
 
-## Architecture
+## Design Overview
+
+| Area | What it does |
+|---|---|
+| **Model adapters** | `ModelAdapterFactory` decouples agent logic from the provider. Hugging Face router, OpenAI-compatible and local fallback adapters. |
+| **Memory** | Token-budgeted sliding window for short-term context; local vector store using MiniLM-L6-v2 embeddings with cosine-similarity retrieval. |
+| **Tools** | Web search and scraping, HTTP client, SQL queries and a Python execution tool, exposed through a REST API. |
+| **Reasoning** | ReAct-style loop; reasoning steps are streamed to the UI over server-sent events (SSE). |
+| **Stack** | Next.js 14 frontend, Python backend (Flask and FastAPI), Docker. |
+
+### Architecture
 
 ```text
 +-----------------------------------------------------------------------------+
@@ -31,157 +41,166 @@ Users can switch between top-tier open-weight models in real time through the mo
 +--------------------------------------v--------------------------------------+
 |                       Python Backend (Flask / FastAPI)                      |
 +--------------------------------------+--------------------------------------+
-| Modular Model Adapters               | Memory Architecture                  |
-| - Hugging Face Serverless Router     | - Short-Term Sliding Buffer          |
-| - OpenAI & Anthropic Adapters        | - Vector Database (MiniLM-L6-v2)     |
+| Modular Model Adapters               | Memory                               |
+| - Hugging Face Router                | - Short-Term Sliding Buffer          |
+| - OpenAI-Compatible Adapter          | - Vector Store (MiniLM-L6-v2)        |
 | - Offline Local Fallback Adapter     | - Relational Conversation Store      |
 +--------------------------------------+--------------------------------------+
-| Action & Execution Tools             | Multi-Agent Orchestration            |
-| - REST API Caller Tool               | - Collaborative Agent Swarm          |
-| - Web Scraper & DuckDuckGo Search    | - Multi-Stage Autonomous Workflows   |
-| - SQLite Query & Schema Tool         | - BLIP Vision Analysis               |
-| - Python Sandboxed Code Runner       | - Whisper Speech-to-Text             |
+| Tools                                | Orchestration & Multimodal           |
+| - HTTP / REST API Caller             | - Agent Swarm                        |
+| - Web Scraper & DuckDuckGo Search    | - Multi-Stage Workflows              |
+| - SQL Query & Schema Tool            | - BLIP Vision Analysis               |
+| - Python Execution Tool (see gaps)   | - Whisper Speech-to-Text             |
 +-----------------------------------------------------------------------------+
 ```
 
+### Model adapters
+
+- `HuggingFaceAdapter`: Hugging Face router (`https://router.huggingface.co/v1`).
+- `OpenAIAdapter`: any OpenAI-compatible endpoint.
+- `LocalFallbackAdapter`: self-contained offline engine for running without a token.
+
+Supported models in the selector: LLaMA 3.2 (3B), Mistral 7B, Qwen 2.5 (72B), Qwen 2.5 Coder (32B), DeepSeek R1.
+
+### Tools
+
+- **Web**: scraping and search parsing via BeautifulSoup and DuckDuckGo.
+- **HTTP client**: GET, POST, PUT, DELETE with configurable headers and payloads.
+- **SQL**: schema inspection and query execution over SQLite and PostgreSQL.
+- **Python execution**: runs model-generated scripts. **Not hardened for untrusted input.**
+
+### Memory
+
+- **Short-term**: token-budgeted sliding window.
+- **Long-term**: local vector store using `sentence-transformers/all-MiniLM-L6-v2`, cosine-similarity retrieval.
+
 ---
 
-## Key Capabilities
+## Known Gaps
 
-### Minimalist Kimi AI-Inspired Design
-- **Theme Palette**: Deep `#121212` canvas, elevated `#181818` surfaces, `#007CFF` electric-blue action triggers, and subtle 1px border dividers.
-- **Typography**: Inter for crisp interface legibility and Geist Mono for code blocks and JSON payloads.
-- **Collapsible Sidebar**: Real-time conversation search, thread management, view switching, and light/dark theme toggles.
-- **Rounded Prompt Composer**: Kimi-style rounded composer with model selector pill, file upload attachments, and live web search toggle.
-- **Zero Emojis**: 100% clean vector SVG icons for all visual controls, status indicators, and badges.
+This is an early-stage project. Things I know are missing or weak:
 
-### Modular Model Adapters
-- **ModelAdapterFactory**: Extensible provider pattern decoupling backend logic from upstream AI APIs.
-- **Providers Supported**:
-  - `HuggingFaceAdapter`: Direct integration with the Hugging Face Serverless Router (`https://router.huggingface.co/v1`).
-  - `OpenAIAdapter`: Compatible with standard OpenAI API endpoints.
-  - `LocalFallbackAdapter`: Self-contained offline reasoning engine.
+- **Code execution is not safe for untrusted input.** Do not expose the Python execution tool to untrusted users or networks.
+- **No authentication** on the API.
+- **No evaluation suite** yet, so agent behaviour and retrieval quality are not measured.
+- **The vector store is file-based** (`vector_store.json`), which will not scale and has no concurrency guarantees.
 
-### Autonomous Tools & Actions
-- **Web Intelligence**: Real-time web scraping and search parsing via BeautifulSoup and DuckDuckGo.
-- **API Caller**: Dynamic HTTP client supporting GET, POST, PUT, DELETE with configurable headers and payloads.
-- **Database Operations**: Schema inspection and SQL query execution over SQLite and PostgreSQL databases.
-- **Code Execution Sandbox**: Secure Python script execution for algorithms, data formatting, and mathematical operations.
+These are what I plan to work on next.
 
-### Dual Memory Architecture
-- **Short-Term Memory**: Token-budgeted sliding window context buffer.
-- **Long-Term Memory**: Local vector store using Sentence Transformers (`sentence-transformers/all-MiniLM-L6-v2`) with cosine similarity retrieval.
+## Feedback Welcome
+
+If you work on agent systems, I'd especially value feedback on:
+
+- **Memory design** (context budgeting, retrieval strategy, what to persist)
+- **Safe tool execution** (sandboxing, permissions, limiting blast radius)
+
+Issues and PRs are welcome.
 
 ---
 
 ## Directory Structure
 
 ```text
-agentops-main/
+agentops/
 |-- backend/
 |   |-- app/
-|   |   |-- adapters/         # Modular LLM adapters (Hugging Face, OpenAI, Local)
+|   |   |-- adapters/         # Model adapters (Hugging Face, OpenAI-compatible, Local)
 |   |   |-- agents/           # Multi-agent swarm definitions
 |   |   |-- intelligence/     # Prompts, personas, ReAct reasoning engine
 |   |   |-- memory/           # Sliding context buffer and vector store
 |   |   |-- routes/           # FastAPI routers
 |   |   |-- services/         # Master coordinator, voice, vision
-|   |   |-- tools/            # Web search, scraper, API caller, DB, sandbox
+|   |   |-- tools/            # Web search, scraper, API caller, DB, code runner
 |   |   |-- config.py         # Backend configuration settings
 |   |   |-- database.py       # SQLAlchemy engine and session factory
 |   |   |-- models.py         # Relational database models
-|   |-- app_flask.py          # Python Flask server with modular adapters
+|   |-- app_flask.py          # Flask server with modular adapters
 |-- frontend/
 |   |-- app/                  # Next.js 14 layout and page routes
 |   |-- components/           # UI components (ChatInterface, Composer, Workspace, Sidebar)
 |   |-- lib/                  # API client, types, constants
 |   |-- styles/               # CSS modules and design tokens
 |   |-- package.json          # Node dependencies
-|-- img/
-|   |-- output1.png           # Main conversational interface
-|   |-- op2.png               # Modular model selector dropdown
-|   |-- op3.png               # Agent workspace and execution telemetry
+|-- img/                      # README screenshots
 |-- .env.example              # Environment variables template
-|-- .gitignore                # Git ignore patterns
 |-- docker-compose.yml        # Multi-container orchestration
-`-- README.md                 # Project documentation
+`-- README.md
 ```
 
 ---
 
 ## Quick Start
 
-### 1. Environment Configuration
+### 1. Environment
 
-Copy the example environment file:
 ```bash
 cp .env.example .env
 ```
 
-Configure environment values in `.env`:
 ```ini
-# Hugging Face Access Token (optional if using local fallback)
+# Hugging Face access token (optional if using the local fallback)
 HF_TOKEN=your_token_here
 HF_ROUTER_BASE_URL=https://router.huggingface.co/v1
 HF_DEFAULT_MODEL=meta-llama/Llama-3.2-3B-Instruct
 
-# Database and Storage
+# Database and storage
 DATABASE_URL=sqlite:///./ai_agent.db
 VECTOR_STORE_PATH=./vector_store.json
 
-# Server Parameters
+# Server
 HOST=0.0.0.0
 PORT=8000
 ```
 
-### 2. Backend Execution
+### 2. Backend
 
-Install Python dependencies:
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-Launch the Flask server with Modular Model Adapters:
-```bash
 python app_flask.py
 ```
 
-*Alternatively, launch the FastAPI server:*
+Or run the FastAPI server instead:
+
 ```bash
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### 3. Frontend Execution
+### 3. Frontend
 
-From the `frontend` directory:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Open your browser at `http://localhost:3000`.
+Open `http://localhost:3000`.
+
+### Docker
+
+```bash
+docker-compose up --build
+```
 
 ---
 
-## API Endpoints Reference
+## API Reference
 
 | Method | Endpoint | Description |
 |---|---|---|
-| `POST` | `/api/chat/send` | Synchronous message execution with ReAct reasoning and tool invocation |
-| `POST` | `/api/chat/stream` | Server-Sent Events (SSE) token and step-by-step reasoning stream |
-| `GET` | `/api/conversations/` | List all stored conversation threads |
-| `POST` | `/api/conversations/create` | Initialize a new conversation thread |
-| `DELETE` | `/api/conversations/<id>` | Delete a conversation thread and associated history |
-| `GET` | `/api/tools/` | List all registered tools and their parameter specifications |
-| `POST` | `/api/tools/execute` | Directly invoke a tool with custom parameters |
-| `GET` | `/api/memory/` | Query vector memory entries using cosine similarity |
-| `POST` | `/api/memory/add` | Ingest a new document into vector memory |
-| `POST` | `/api/workflows/execute` | Execute an autonomous multi-phase workflow |
+| `POST` | `/api/chat/send` | Synchronous message with ReAct reasoning and tool calls |
+| `POST` | `/api/chat/stream` | SSE stream of tokens and reasoning steps |
+| `GET` | `/api/conversations/` | List conversation threads |
+| `POST` | `/api/conversations/create` | Create a conversation thread |
+| `DELETE` | `/api/conversations/<id>` | Delete a thread and its history |
+| `GET` | `/api/tools/` | List registered tools and parameter specs |
+| `POST` | `/api/tools/execute` | Invoke a tool directly |
+| `GET` | `/api/memory/` | Query vector memory by cosine similarity |
+| `POST` | `/api/memory/add` | Add a document to vector memory |
+| `POST` | `/api/workflows/execute` | Run a multi-phase workflow |
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
+MIT License.
