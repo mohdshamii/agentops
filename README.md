@@ -18,11 +18,6 @@ Users can switch between top-tier open-weight models in real time through the mo
 
 ![Modular Model Selector](img/op2.png)
 
-### 3. Agent Workspace & Execution Telemetry
-The right-hand workspace drawer tracks autonomous task plans, multi-stage ReAct execution, tool execution logs with latency metrics, verified web sources, and semantic memory matches.
-
-![Agent Workspace Telemetry](img/op3.png)
-
 ---
 
 ## Architecture
